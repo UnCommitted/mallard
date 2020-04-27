@@ -4,13 +4,13 @@ use tokio::sync::mpsc;
 // use std::time::Duration;
 // use tokio::time::delay_for;
 
+// Max telemetry messages before checking other channels.
+const MAX_TELEMETRY_MESSAGES: i32 = 20;
+
 /// railsim binary for testing instantiation of the various components
 /// To be used as a template for later users.
 #[tokio::main]
 async fn main() {
-    // Max telemetry messages before checking other channels.
-    const MAX_TELEMETRY_MESSAGES: i32 = 20;
-
     // Set up the communications with the world object
     // Channel for sending message from the main thread to the world
     let (mut main_sender, world_receiver) = mpsc::channel::<WorldCommand>(100);
@@ -47,7 +47,7 @@ async fn main() {
 
     // Main loop
     'main: loop {
-        // Deal with and world messages
+        // Deal with world messages
         match main_receiver.try_recv() {
             Ok(WorldResponse::ProcessedQuit) => {
                 println!("Got ProcessedQuit from world, quitting");

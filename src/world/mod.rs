@@ -1,26 +1,16 @@
 /// world module - implements the asynchronous 'real' world of the running trains
+// Expose the message module
+mod messages;
+
 use crate::telemetry::Telemetry;
 use tokio::sync::mpsc::{Receiver, Sender};
+
+// Use, and reexport these enums the main loop.
+pub use crate::world::messages::{WorldCommand, WorldResponse};
 
 // USE THE FOLLOWING FOR TESTING IF REQUIRED.
 // use std::time::Duration;
 // use tokio::time::delay_for;
-
-/// World messaging enums
-
-/// Commands to be sent to the world
-#[derive(Debug)]
-pub enum WorldCommand {
-    AreYouReady,
-    Quit,
-}
-
-/// Responses from world commands
-#[derive(Debug)]
-pub enum WorldResponse {
-    WorldReady,
-    ProcessedQuit,
-}
 
 /// World type, handles running the world we run trains in.
 #[derive(Debug)]
