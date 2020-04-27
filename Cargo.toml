@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 tokio = { version = "0.2", features = ["full"] }
+sdl2 = { version = "0.34.0", features = ["bundled"] }

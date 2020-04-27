@@ -1,6 +1,7 @@
 use mallard::telemetry::Telemetry;
 use mallard::world::{World, WorldCommand, WorldResponse};
 use tokio::sync::mpsc;
+use mallard::interface::run_gui;
 // use std::time::Duration;
 // use tokio::time::delay_for;
 
@@ -30,6 +31,9 @@ async fn main() {
 
     // Start the world
     let world_thread = tokio::spawn(World::run(temp_world));
+
+    // Start the GUI
+    let gui_thread = tokio::spawn(run_gui());
 
     // Wait for the world to be ready
     println!("Seeing if world is ready");
@@ -77,5 +81,12 @@ async fn main() {
         println!("Left the telemetry loop");
     }
 
+    // Wait for the various threads to finish
     world_thread.await.unwrap();
+    println!("World Simulation Thread has Finished");
+
+    gui_thread.await.unwrap();
+    println!("GUI Thread has Finished");
+
+    println!("QUITTING THE SIMULATION");
 }
