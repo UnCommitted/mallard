@@ -1,5 +1,10 @@
 /// world module - implements the asynchronous 'real' world of the running trains
+use crate::telemetry::Telemetry;
 use tokio::sync::mpsc::{Receiver, Sender};
+
+// USE THE FOLLOWING FOR TESTING IF REQUIRED.
+// use std::time::Duration;
+// use tokio::time::delay_for;
 
 /// World messaging enums
 
@@ -22,13 +27,15 @@ pub enum WorldResponse {
 pub struct World {
     pub command_ch: Receiver<WorldCommand>,
     pub response_ch: Sender<WorldResponse>,
+    pub telemetry_ch: Sender<Telemetry>,
 }
 
 impl World {
     /// Main Async world function - this runs our train world
     pub async fn run(mut world: World) {
-        loop {
-            // Get message from the main thread
+        // Main World Loop
+        'main: loop {
+            // Check for messages from the main thread
             match world.command_ch.try_recv() {
                 // Respond to query asking for our readiness
                 Ok(WorldCommand::AreYouReady) => {
@@ -48,11 +55,22 @@ impl World {
                         .send(WorldResponse::ProcessedQuit)
                         .await
                         .unwrap();
-                    break;
+
+                    // Drop out of the main loop and exit the world
+                    break 'main;
                 }
 
                 // Something has gone wrong..
                 Err(_) => {}
+            }
+
+            // Send through some telemetry
+            for i in 1..11 {
+                world
+                    .telemetry_ch
+                    .send(Telemetry::BasicTelemetry(i))
+                    .await
+                    .unwrap();
             }
         }
     }
