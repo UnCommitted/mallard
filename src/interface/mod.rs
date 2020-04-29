@@ -1,10 +1,13 @@
 /// Implements the graphical user interface using SDL2
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use sdl2::pixels::Color;
-use std::time::Duration;
-use tokio::sync::mpsc::{Receiver, Sender};
-use tokio::time::delay_for;
+// use sdl2::event::Event;
+// use sdl2::keyboard::Keycode;
+// use sdl2::pixels::Color;
+// use std::time::Duration;
+
+// use tokio::sync::mpsc::{Receiver, Sender};
+use tokio::sync::mpsc::Sender;
+
+// use tokio::time::delay_for;
 
 // Messages that can be passed to and from the interface
 mod messages;

@@ -1,5 +1,5 @@
 // Mallard specific library
-use mallard::interface::FromInterfaceMessage;
+// use mallard::interface::FromInterfaceMessage;
 use mallard::telemetry::Telemetry;
 use mallard::world::{World, WorldCommand, WorldResponse};
 
@@ -11,10 +11,9 @@ use sdl2::pixels::Color;
 // Threading and time control
 use std::time::{Duration, Instant};
 use tokio::sync::mpsc;
-use tokio::sync::mpsc::{Receiver, Sender};
 
 // Max telemetry messages before checking other channels.
-const MAX_TELEMETRY_MESSAGES: i32 = 20;
+// const MAX_TELEMETRY_MESSAGES: i32 = 20;
 
 /// railsim binary for testing instantiation of the various components
 /// To be used as a template for later users.
@@ -110,7 +109,6 @@ async fn main() {
         }
 
         // Handle telemetry
-        let mut telemetry_loop_ctr = 0;
         while Instant::now().duration_since(start) < max_time {
             match telemetry_receiver.try_recv() {
                 Ok(Telemetry::BasicTelemetry(number)) => {
@@ -120,9 +118,6 @@ async fn main() {
                     break;
                 }
             }
-            // Increment our loop counter to stop telemetry messages
-            // from disallowing other actions.
-            telemetry_loop_ctr += 1;
         }
         println!("Left the telemetry loop");
     }
