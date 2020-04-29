@@ -1,14 +1,17 @@
+// Mallard specific library
 use mallard::interface::FromInterfaceMessage;
 use mallard::telemetry::Telemetry;
 use mallard::world::{World, WorldCommand, WorldResponse};
+
+// GUI
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use std::time::Duration;
+
+// Threading and time control
+use std::time::{Duration, Instant};
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::{Receiver, Sender};
-// use std::time::Duration;
-use tokio::time::delay_for;
 
 // Max telemetry messages before checking other channels.
 const MAX_TELEMETRY_MESSAGES: i32 = 20;
@@ -67,8 +70,14 @@ async fn main() {
     let mut event_pump = sdl_context.event_pump().unwrap();
     let mut i = 0;
 
+    // Main loop duration
+    let max_time = Duration::from_millis(15);
+
     // Main loop
     'main: loop {
+        let start = Instant::now();
+
+        // Start a delay to check for at the end of the loop
         i = (i + 1) % 255;
         canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
         canvas.clear();
@@ -102,7 +111,7 @@ async fn main() {
 
         // Handle telemetry
         let mut telemetry_loop_ctr = 0;
-        while telemetry_loop_ctr < MAX_TELEMETRY_MESSAGES {
+        while Instant::now().duration_since(start) < max_time {
             match telemetry_receiver.try_recv() {
                 Ok(Telemetry::BasicTelemetry(number)) => {
                     println!("Got Some Basic Telemetry {}", number);
@@ -116,7 +125,6 @@ async fn main() {
             telemetry_loop_ctr += 1;
         }
         println!("Left the telemetry loop");
-        delay_for(Duration::from_micros(1)).await;
     }
 
     // Wait for the various threads to finish
